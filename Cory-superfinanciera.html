@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <title>Cory Assistant</title>
+  <link rel="icon" type="image/png" href="favicon.png" sizes="64x64">
+  <style>
+  img {
+    width: 100%;
+  }
+  </style>
+
+</head>
+<body>
+  <img src="background.jpg" alt="background">
+</body>
+
+<script>
+        //- GEOLOCALIZACION Y CHAT
+        var options = {
+        formatted_address: "permissionDenied"
+      };
+      function initMap() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            console.log('Location found');
+            options.formatted_address = "Lat:" + pos.lat + ", Lng:" + pos.lng;
+            console.log(options.formatted_address);
+          }, function() {
+              console.log('Error');
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          console.log('Error');
+        }
+        loadAssistant();
+      }
+      initMap();
+      function preSendhandler(event) {
+        event.data.context.skills['Covid-19-Colombia'] = event.data.context.skills['Covid-19-Colombia'] || { user_defined: {} };
+        event.data.context.skills['Covid-19-Colombia'].user_defined.location = options.formatted_address;
+      }
+      function loadAssistant() {
+  window.watsonAssistantChatOptions = {
+      integrationID: "481d7a8f-0bc9-4ca7-9f47-41455097de77", // The ID of this integration.
+      region: "us-south", // The region your integration is hosted in.
+      serviceInstanceID: "61362fd1-6717-47af-89a8-7054186606eb", // The ID of your service instance.
+      onLoad: function(instance) { instance.render(); }
+    };
+  setTimeout(function(){
+    const t=document.createElement('script');
+    t.src="https://web-chat.global.assistant.watson.appdomain.cloud/loadWatsonAssistantChat.js";
+    document.head.appendChild(t);
+  });
+}
+</script>
+</html>
